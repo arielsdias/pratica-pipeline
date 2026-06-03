@@ -1,4 +1,4 @@
-name: Continuous Deployment
+name: Controle de Entrega
 
 on:
   push:
@@ -6,33 +6,59 @@ on:
       - main
 
 jobs:
-
-  deploy:
-
+  validar_usuarios:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Executar teste
-        run: python test_calculadora.py
-
-      - name: Gerar pacote
+      - name: Validar serviço de usuários
         run: |
-          mkdir release
-          cp calculadora.py release/
+          echo "Validando serviço de usuários"
+          test -f service-usuarios/index.html
+          grep "Serviço de Usuários" service-usuarios/index.html
+          echo "Serviço de usuários validado com sucesso"
+
+  validar_catalogo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Validar serviço de catálogo
+        run: |
+          echo "Validando serviço de catálogo"
+          test -f service-catalogo/index.html
+          grep "Serviço de Catálogo" service-catalogo/index.html
+          echo "Serviço de catálogo validado com sucesso"
+
+  gerar_entrega:
+    runs-on: ubuntu-latest
+    needs:
+      - validar_usuarios
+      - validar_catalogo
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Exibir versão da entrega
+        run: |
+          echo "Versão da entrega:"
+          cat VERSION
+
+      - name: Criar pacote da entrega
+        run: |
+          mkdir entrega
+          cp -r service-usuarios entrega/
+          cp -r service-catalogo entrega/
+          cp VERSION entrega/
+          zip -r entrega-versionada.zip entrega
 
       - name: Publicar artefato
         uses: actions/upload-artifact@v4
         with:
-          name: calculadora
-          path: release/
-
-      - name: Simular deploy
-        run: |
-          echo "Deploy realizado automaticamente"
+          name: entrega-versionada
+          path: entrega-versionada.zip
