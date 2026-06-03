@@ -1,4 +1,4 @@
-name: Pipeline Cloud Native Simples
+name: Solucao Estudo de Caso
 
 on:
   push:
@@ -6,31 +6,21 @@ on:
       - main
 
 jobs:
-
   usuarios:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Validar Usuarios
+      - name: Validar usuarios
         run: |
+          test -f service-usuarios/index.html
           echo "Servico de usuarios validado"
-
-      - name: Simular Empacotamento
-        run: |
-          echo "Gerando pacote do servico de usuarios"
 
   catalogo:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Validar Catalogo
+      - name: Validar catalogo
         run: |
+          test -f service-catalogo/index.html
           echo "Servico de catalogo validado"
 
-      - name: Simular Empacotamento
-        run: |
-          echo "Gerando pacote do servico de catalogo"
