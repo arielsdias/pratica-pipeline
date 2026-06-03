@@ -1,4 +1,4 @@
-name: Solucao Estudo de Caso
+name: CI Simples
 
 on:
   push:
@@ -6,21 +6,18 @@ on:
       - main
 
 jobs:
-  usuarios:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validar usuarios
-        run: |
-          test -f service-usuarios/index.html
-          echo "Servico de usuarios validado"
 
-  catalogo:
+  teste:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      - name: Validar catalogo
-        run: |
-          test -f service-catalogo/index.html
-          echo "Servico de catalogo validado"
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Executar teste
+        run: python test_calculadora.py
 
