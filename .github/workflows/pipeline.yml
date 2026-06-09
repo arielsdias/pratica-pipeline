@@ -77,7 +77,7 @@ jobs:
 
       - name: Criar pacote da entrega
         run: |
-          mkdir entrega
+          
           cp -r service-usuarios entrega/
           cp -r service-catalogo entrega/
           cp VERSION entrega/
