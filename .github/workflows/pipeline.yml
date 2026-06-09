@@ -46,6 +46,7 @@ jobs:
 
       - name: Exibir versão da entrega
         run: |
+          sleep 20
           echo "Versão da entrega:"
           cat VERSION
 
