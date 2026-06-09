@@ -52,6 +52,29 @@ jobs:
           echo "Versão da entrega:"
           cat VERSION
 
+      - name: Gerar informações de rastreabilidade
+        run: |
+
+          mkdir entrega
+
+          echo "Versão:" > entrega/rastreabilidade.txt
+          cat VERSION >> entrega/rastreabilidade.txt
+
+          echo "" >> entrega/rastreabilidade.txt
+
+          echo "Commit:" >> entrega/rastreabilidade.txt
+          echo "${{ github.sha }}" >> entrega/rastreabilidade.txt
+
+          echo "" >> entrega/rastreabilidade.txt
+
+          echo "Autor:" >> entrega/rastreabilidade.txt
+          echo "${{ github.actor }}" >> entrega/rastreabilidade.txt
+
+          echo "" >> entrega/rastreabilidade.txt
+
+          echo "Data:" >> entrega/rastreabilidade.txt
+          date >> entrega/rastreabilidade.txt
+
       - name: Criar pacote da entrega
         run: |
           mkdir entrega
