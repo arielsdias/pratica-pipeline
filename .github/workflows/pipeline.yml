@@ -66,3 +66,23 @@ jobs:
         with:
           name: entrega-versionada
           path: entrega-versionada.zip
+
+
+  validar_seguranca:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Procurar senhas expostas
+        run: |
+
+          echo "Verificando segurança..."
+
+          if grep -R "SENHA=" . ; then
+            echo "ALERTA: senha encontrada no projeto"
+            exit 1
+          fi
+
+          echo "Nenhuma senha encontrada"
