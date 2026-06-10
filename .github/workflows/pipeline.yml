@@ -6,6 +6,7 @@ on:
       - main
 
 jobs:
+
   validar_usuarios:
     runs-on: ubuntu-latest
 
@@ -34,29 +35,72 @@ jobs:
           grep "Serviço de Catálogo" service-catalogo/index.html
           echo "Serviço de catálogo validado com sucesso"
 
-
-  
-  gerar_entrega:
+  validar_seguranca:
     runs-on: ubuntu-latest
-    needs:
-      - validar_seguranca
-      - validar_usuarios
-      - validar_catalogo
-      
 
     steps:
       - name: Baixar código
         uses: actions/checkout@v4
 
+      - name: Procurar senhas expostas
+        run: |
+          echo "Verificando segurança..."
+
+          if grep -R "SENHA=" . ; then
+            echo "ALERTA: senha encontrada no projeto"
+            exit 1
+          fi
+
+          echo "Nenhuma senha encontrada"
+
+  gerar_entrega:
+    runs-on: ubuntu-latest
+
+    needs:
+      - validar_usuarios
+      - validar_catalogo
+      - validar_seguranca
+
+    steps:
+
+      - name: Baixar código
+        uses: actions/checkout@v4
+
       - name: Exibir versão da entrega
         run: |
-          sleep 20
           echo "Versão da entrega:"
           cat VERSION
 
+      - name: Gerar informações de rastreabilidade
+        run: |
+
+          mkdir entrega
+
+          echo "Versão:" > entrega/rastreabilidade.txt
+          cat VERSION >> entrega/rastreabilidade.txt
+
+          echo "" >> entrega/rastreabilidade.txt
+          echo "Commit:" >> entrega/rastreabilidade.txt
+          echo "${{ github.sha }}" >> entrega/rastreabilidade.txt
+
+          echo "" >> entrega/rastreabilidade.txt
+          echo "Autor:" >> entrega/rastreabilidade.txt
+          echo "${{ github.actor }}" >> entrega/rastreabilidade.txt
+
+          echo "" >> entrega/rastreabilidade.txt
+          echo "Execução:" >> entrega/rastreabilidade.txt
+          echo "${{ github.run_number }}" >> entrega/rastreabilidade.txt
+
+          echo "" >> entrega/rastreabilidade.txt
+          echo "Workflow:" >> entrega/rastreabilidade.txt
+          echo "${{ github.workflow }}" >> entrega/rastreabilidade.txt
+
+          echo "" >> entrega/rastreabilidade.txt
+          echo "Data:" >> entrega/rastreabilidade.txt
+          date >> entrega/rastreabilidade.txt
+
       - name: Criar pacote da entrega
         run: |
-          mkdir entrega
           cp -r service-usuarios entrega/
           cp -r service-catalogo entrega/
           cp VERSION entrega/
@@ -67,23 +111,3 @@ jobs:
         with:
           name: entrega-versionada
           path: entrega-versionada.zip
-
-
-  validar_seguranca:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
-
-      - name: Procurar senhas expostas
-        run: |
-
-          echo "Verificando segurança..."
-
-          if grep -R "SENHA=" . ; then
-            echo "ALERTA: senha encontrada no projeto"
-            exit 1
-          fi
-
-          echo "Nenhuma senha encontrada"
