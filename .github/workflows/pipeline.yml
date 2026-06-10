@@ -39,6 +39,7 @@ jobs:
   gerar_entrega:
     runs-on: ubuntu-latest
     needs:
+      - validar_seguranca
       - validar_usuarios
       - validar_catalogo
       
