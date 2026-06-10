@@ -59,7 +59,7 @@ jobs:
     needs:
       - validar_usuarios
       - validar_catalogo
-      - validar_seguranca
+      
 
     steps:
 
